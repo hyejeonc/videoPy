@@ -17,7 +17,7 @@ pixel : https://076923.github.io/posts/Python-opencv-34/
 '''
 
 # load video file 
-vidAdd = os.path.abspath("sample.mp4")
+vidAdd = os.path.abspath("vid/B27_3.mp4")
 cap = cv2.VideoCapture(vidAdd)
 
 #B27.mp4
@@ -78,12 +78,31 @@ while True:
 with plt.style.context(['science', 'muted']):        
     #colors = np.array(['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w'])
     colors = np.array(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
-    fig1, ax1 = plt.subplots()
-    fig1.set_figwidth(5)
+    fig, ax = plt.subplots()
+    fig.set_figwidth(5)
             
         
     xPlot = np.linspace(2, i, i-1)    
-    plt.plot(xPlot, delta)    
+    ax.plot(xPlot, delta)    
+    
+    ax.set(xlabel=r'$t$')
+    ax.set(ylabel=r'$x$')
+    
+    ax.autoscale(tight=True)
+    
+    
+    #fig.suptitle("Reduced position of bubbles ", fontsize=12, x=0.55, y=1.005)
+    #ax.set_title(r'$\Delta P $ = 30, $\xi_L(0) = 0.050$, $\xi_R(0) = 0.055$, $\tau = 10^{-5}$', fontsize=8)
+    
+    fig.tight_layout() 
+    
+    #ax.set_xlim(0.0, 0.1)
+    #ax.set_ylim(0.0, 1.0)
+    ax.set_ylabel(r"$\delta$")
+    ax.set_xlabel(r"$t$")
+    fig.show()
+    #fig.savefig('fig/.pdf')
+    fig.savefig('fig/B27_3.jpg', dpi=500)
     
     '''
     fps 
