@@ -1,5 +1,6 @@
 import os.path
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 
 import cv2
@@ -15,24 +16,29 @@ Recognize face : https://m.blog.naver.com/PostView.nhn?blogId=chandong83&logNo=2
 pixel : https://076923.github.io/posts/Python-opencv-34/
 
 '''
-vidArray = ['Serum', 'B27_3', 'AIM']
+vidArray = ['Serum', 'AIM', 'B27']
 
+distArray = []
+xPlotArray = []
+fpsArray = []
 
 
 for vid in vidArray:    
     # load video file 
-    vidAdd = os.path.abspath("vid/" + vid + ".mp4")
-    cap = cv2.VideoCapture(vidAdd)
+    vidPath = os.path.abspath("vid/" + vid + ".mp4")
+    vidObj = cv2.VideoCapture(vidPath)
     
+    fps = vidObj.get(cv2.CAP_PROP_FPS)
+    fpsArray.append(fps)
     #B27.mp4
     #Serum.mp4
     #AIM.mp4
     #B27_2.mp4
     #B27_3.mp4
     
-    if cap.isOpened() == False:
+    if vidObj.isOpened() == False:
         print("Wrong directory. Check address again!")
-        exit()
+   
         
     
     '''
@@ -50,14 +56,16 @@ for vid in vidArray:
     out = cv2.VideoWriter(filename, fourcc, fps, (int(width), int(height)))    
     '''
     
-    delta = []
+    dist = []
     
-    i = 0 # - 
+    i = 0
     while True:
-        ret, frame = cap.read()
+        ret, frame = vidObj.read()
         
         if frame is None:
         #if i == 10:
+            distArray.append(dist)
+            xPlotArray.append(i)
             break
         
         grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -70,54 +78,80 @@ for vid in vidArray:
         
         
         if i > 0:
-            delta.append( np.sum((grayFrame - oldGrayFrame)**2) )
-        
+            #frameDiff = (grayFrame - oldGrayFrame)**2
+            #dist.append(np.sum(np.sqrt(frameDiff)))
+            dist.append(np.sum(np.absolute(grayFrame - oldGrayFrame)))
             
+            '''
+            frameDist = np.sqrt(frameDiff)
             
+            m, n = np.shape(frameDist)
+            
+            sum = 0
+            for i in range(m):
+                for j in range(n):
+                    sum += frameDist[i,j]
+            
+            print(sum)
+            dist.append( sum )  # frame 의 가로 세로 크기가 같아야 비교 가능! 
+            '''
+
         oldGrayFrame = grayFrame 
         i += 1    
     
+
+#with plt.style.context(['science','ieee']): 
+with plt.style.context(['science', 'muted']):  
+    #colors = ['blue', 'orange', 'green', 'red', 'purple']      
+    #colors = np.array(['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w'])
+    #colors = np.array(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+    lines = ['-', '--', '-.', ':']
+
+            
+        
+    #xPlot = np.linspace(2, i, i-1)    
     
-    #with plt.style.context(['science','ieee']): 
-    with plt.style.context(['science', 'muted']):        
-        #colors = np.array(['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w'])
-        colors = np.array(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
+    for i in range(len(vidArray)):
+    #    print(i)
         fig, ax = plt.subplots()
         fig.set_figwidth(5)
-                
-            
-        xPlot = np.linspace(2, i, i-1)    
-        ax.plot(xPlot, delta)    
         
-        ax.set(xlabel=r'$t$')
-        ax.set(ylabel=r'$x$')
-        
+        ax.plot(np.linspace(0, xPlotArray[i],xPlotArray[i]-1 ), distArray[i], label=str(vidArray[i]))    
+    
         ax.autoscale(tight=True)
-        
         
         #fig.suptitle("Reduced position of bubbles ", fontsize=12, x=0.55, y=1.005)
         #ax.set_title(r'$\Delta P $ = 30, $\xi_L(0) = 0.050$, $\xi_R(0) = 0.055$, $\tau = 10^{-5}$', fontsize=8)
         
         fig.tight_layout() 
         
-        #ax.set_xlim(0.0, 0.1)
+        ax.set_xlim(0.0, 630)
         #ax.set_ylim(0.0, 1.0)
         ax.set_ylabel(r"$\delta$")
-        ax.set_xlabel(r"$t$")
+        ax.set_xlabel(r"Frame")
+        ax.set_yscale('log')
+        ax.legend()
         fig.show()
         #fig.savefig('fig/.pdf')
-        fig.savefig('fig/B27_3.jpg', dpi=500)
-        
-        '''
-        fps 
-        
-        while True:
-            ret, frame = video.read()
-        
-            if ret is True: 
-        
-                cv2.imshow('video', frame)
-        
-                if cv2.waitKey(1) > 0:
-                    break
-        '''
+        fig.savefig('fig/test-' + str(vidArray[i]) '.jpg', dpi=500)
+    
+    
+    
+    
+    
+    
+    
+    
+    '''
+    fps 
+    
+    while True:
+        ret, frame = video.read()
+    
+        if ret is True: 
+    
+            cv2.imshow('video', frame)
+    
+            if cv2.waitKey(1) > 0:
+                break
+    '''
