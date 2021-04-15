@@ -25,7 +25,7 @@ fpsArray = []
 
 for vid in vidArray:    
     # load video file 
-    vidPath = os.path.abspath("vid/" + vid + ".mp4")
+    vidPath = os.path.abspath("vid2/" + vid + ".mp4")
     vidObj = cv2.VideoCapture(vidPath)
     
     fps = vidObj.get(cv2.CAP_PROP_FPS)
@@ -101,7 +101,7 @@ for vid in vidArray:
     
 
 #with plt.style.context(['science','ieee']): 
-with plt.style.context(['science', 'muted']):  
+with plt.style.context(['science']):  
     #colors = ['blue', 'orange', 'green', 'red', 'purple']      
     #colors = np.array(['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w'])
     #colors = np.array(['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'])
@@ -116,7 +116,7 @@ with plt.style.context(['science', 'muted']):
         fig, ax = plt.subplots()
         fig.set_figwidth(5)
         
-        ax.plot(np.linspace(0, xPlotArray[i],xPlotArray[i]-1 ), distArray[i], label=str(vidArray[i]))    
+        ax.plot(np.linspace(0, xPlotArray[i],xPlotArray[i]-1 )/fpsArray[i], distArray[i], label=str(vidArray[i]),color='#1f77b4')    
     
         ax.autoscale(tight=True)
         
@@ -125,15 +125,16 @@ with plt.style.context(['science', 'muted']):
         
         fig.tight_layout() 
         
-        ax.set_xlim(0.0, 630)
-        #ax.set_ylim(0.0, 1.0)
+        ax.set_xlim(0.0, 630/30)
+        ax.set_ylim(1e5, 1.5e8)
         ax.set_ylabel(r"$\delta$")
-        ax.set_xlabel(r"Frame")
+        ax.set_xlabel(r"$t$ [s]")
         ax.set_yscale('log')
         ax.legend()
         fig.show()
         #fig.savefig('fig/.pdf')
-        fig.savefig('fig/test-' + str(vidArray[i]) '.jpg', dpi=500)
+        fig.savefig('fig/log-' + str(vidArray[i]) + '.jpg', dpi=500)
+        fig.savefig('fig/log-' + str(vidArray[i]) + '.pdf')
     
     
     
